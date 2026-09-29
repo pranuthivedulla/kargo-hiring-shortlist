@@ -70,6 +70,8 @@ export type Decision = {
     subject?: string;
     body?: string;
     bookingUrl?: string;
+    /** Interview times offered, read from Arjun's calendar. */
+    slots?: string[];
     error?: string;
   };
 };

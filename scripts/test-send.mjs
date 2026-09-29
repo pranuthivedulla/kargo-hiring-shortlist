@@ -15,6 +15,7 @@ const status = process.argv[2] === "advanced" ? "advanced" : "rejected";
 
 const { sendOverride, draftMessage, subjectFor, createBookingLink, sendEmail, emailFromCv } =
   await import("../lib/comms.ts");
+const { bookingUrl, calendarConfigured, findSlots } = await import("../lib/gcal.ts");
 
 const override = sendOverride();
 if (!override) {
@@ -38,16 +39,31 @@ if (resolved !== override) {
   process.exit(1);
 }
 
-let bookingUrl = null;
+let offer = { kind: "none" };
 if (status === "advanced") {
-  const link = await createBookingLink(candidate, override);
-  bookingUrl = link.url;
-  console.log(`calendly  : ${link.url ?? "none — " + link.error}`);
+  const fixed = bookingUrl();
+  if (fixed) {
+    offer = { kind: "link", url: fixed };
+    console.log(`booking   : ${fixed}`);
+  } else if (calendarConfigured()) {
+    const { slots, error } = await findSlots();
+    if (slots.length) {
+      offer = { kind: "slots", slots: slots.map((s) => s.label) };
+      console.log(`calendar  : ${slots.length} open slots`);
+      for (const s of slots) console.log(`            ${s.label}`);
+    } else {
+      console.log(`calendar  : no slots — ${error}`);
+    }
+  } else {
+    const link = await createBookingLink(candidate, override);
+    if (link.url) offer = { kind: "link", url: link.url };
+    console.log(`calendly  : ${link.url ?? "none — " + link.error}`);
+  }
 }
 
 console.log("\ndrafting…");
 const subject = subjectFor(status, role);
-const body = await draftMessage(candidate, role, status, bookingUrl);
+const body = await draftMessage(candidate, role, status, offer);
 
 console.log(`\nSubject: ${subject}\n${"-".repeat(60)}\n${body}\n${"-".repeat(60)}`);
 

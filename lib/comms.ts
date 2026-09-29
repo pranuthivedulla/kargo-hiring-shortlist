@@ -8,6 +8,23 @@ import type { DecisionStatus } from "./types";
  * are deliberately not passed in, so there is no route by which an internal
  * assessment can leak into a candidate's inbox.
  */
+/**
+ * How the candidate is asked to schedule. Google Calendar has no API for a
+ * self-serve booking page, so "slots" is what this app produces: real openings
+ * read from Arjun's calendar, which the candidate replies to choose from.
+ */
+/**
+ * One source of truth for the interview length, shared by the email text and
+ * the calendar slot finder. Hardcoding it in the prompt meant the email could
+ * quietly promise 45 minutes after the booking page had been changed to 30.
+ */
+export const INTERVIEW_MINUTES = Number(process.env.INTERVIEW_MINUTES ?? 45);
+
+export type BookingOffer =
+  | { kind: "slots"; slots: string[] }
+  | { kind: "link"; url: string }
+  | { kind: "none" };
+
 const DRAFT_SYSTEM = `You write short hiring emails on behalf of Arjun Mehta, founder of Kargo, a
 Series A logistics software company in Mumbai. Kargo has no HR function; Arjun
 writes to candidates himself.
@@ -28,15 +45,23 @@ application forward for this role, and that the decision does not close the door
 on future roles. Do not give any reason specific to them.`;
 }
 
-function advancePrompt(name: string, role: Role, bookingUrl: string | null): string {
-  return `Write a message to ${name} inviting them to the first interview round for the
-${ROLE_LABEL[role]} role at Kargo: a 45-minute conversation with Arjun.
-Four to six sentences. Say you would like to speak with them, name the round, and
-${
-    bookingUrl
-      ? `ask them to pick a time using this link, included on its own line exactly as written: ${bookingUrl}`
-      : "ask them to reply with two or three times that suit them this week (no scheduling link is available)."
+function advancePrompt(name: string, role: Role, offer: BookingOffer): string {
+  let ask: string;
+  if (offer.kind === "slots") {
+    ask = `list these times as a bulleted list, each on its own line, exactly as written,
+and ask them to reply with whichever suits them best:
+${offer.slots.map((s) => `- ${s}`).join("\n")}
+If none of them work, invite them to suggest alternatives.`;
+  } else if (offer.kind === "link") {
+    ask = `ask them to pick a time using this link, included on its own line exactly as written: ${offer.url}`;
+  } else {
+    ask = "ask them to reply with two or three times that suit them this week (no scheduling options are available).";
   }
+
+  return `Write a message to ${name} inviting them to the first interview round for the
+${ROLE_LABEL[role]} role at Kargo: a ${INTERVIEW_MINUTES}-minute conversation with Arjun.
+Four to six sentences, plus the times if any are given below. Say you would like
+to speak with them, name the round, and ${ask}
 Do not mention why they were selected.`;
 }
 
@@ -76,9 +101,9 @@ export async function draftMessage(
   name: string,
   role: Role,
   status: DecisionStatus,
-  bookingUrl: string | null,
+  offer: BookingOffer,
 ): Promise<string> {
-  if (!hasKey()) return fallbackBody(name, role, status, bookingUrl);
+  if (!hasKey()) return fallbackBody(name, role, status, offer);
 
   try {
     const text = (
@@ -86,16 +111,16 @@ export async function draftMessage(
         system: DRAFT_SYSTEM,
         prompt:
           status === "advanced"
-            ? advancePrompt(name, role, bookingUrl)
+            ? advancePrompt(name, role, offer)
             : declinePrompt(name, role),
         maxTokens: 700,
         tier: "drafting",
       })
     ).trim();
-    return text || fallbackBody(name, role, status, bookingUrl);
+    return text || fallbackBody(name, role, status, offer);
   } catch {
     // A drafting failure must never block the decision from being recorded.
-    return fallbackBody(name, role, status, bookingUrl);
+    return fallbackBody(name, role, status, offer);
   }
 }
 
@@ -104,18 +129,22 @@ export function fallbackBody(
   name: string,
   role: Role,
   status: DecisionStatus,
-  bookingUrl: string | null,
+  offer: BookingOffer,
 ): string {
   const first = name.split(" ")[0];
   if (status === "advanced") {
     return [
       `Hi ${first},`,
       "",
-      `Thank you for applying for the ${ROLE_LABEL[role]} role at Kargo. I would like to take this forward and speak with you properly — a 45-minute first conversation with me.`,
+      `Thank you for applying for the ${ROLE_LABEL[role]} role at Kargo. I would like to take this forward and speak with you properly — a ${INTERVIEW_MINUTES}-minute first conversation with me.`,
       "",
-      bookingUrl
-        ? `You can pick a time that works for you here:\n${bookingUrl}`
-        : "Could you reply with two or three times that suit you this week?",
+      offer.kind === "slots"
+        ? `Any of these work on my side — reply with whichever suits you best:\n${offer.slots
+            .map((x) => `  - ${x}`)
+            .join("\n")}\n\nIf none of them work, tell me what does.`
+        : offer.kind === "link"
+          ? `You can pick a time that works for you here:\n${offer.url}`
+          : "Could you reply with two or three times that suit you this week?",
       "",
       "Looking forward to it.",
       "",

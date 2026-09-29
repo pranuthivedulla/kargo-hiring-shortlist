@@ -1,6 +1,13 @@
 import { NextResponse } from "next/server";
 import { loadDecision, loadDecisions, loadLatestRun, saveDecision } from "@/lib/store";
-import { createBookingLink, draftMessage, emailFromCv, subjectFor } from "@/lib/comms";
+import {
+  createBookingLink,
+  draftMessage,
+  emailFromCv,
+  subjectFor,
+  type BookingOffer,
+} from "@/lib/comms";
+import { bookingUrl, calendarConfigured, findSlots } from "@/lib/gcal";
 import { ROLES, type Role } from "@/lib/paths";
 import type { Decision, DecisionStatus } from "@/lib/types";
 
@@ -19,6 +26,18 @@ export async function GET() {
  * Arjun's click. This is the ONLY thing that changes a candidate's status, and
  * the only thing that produces a draft or a booking link. It does not send.
  */
+/** Pre-fills the invitee's details on a Google or Calendly booking page. */
+function withInvitee(base: string, name: string, email?: string): string {
+  try {
+    const u = new URL(base);
+    u.searchParams.set("name", name);
+    if (email) u.searchParams.set("email", email);
+    return u.toString();
+  } catch {
+    return base;
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const body = (await req.json().catch(() => ({}))) as {
@@ -51,12 +70,27 @@ export async function POST(req: Request) {
 
     const email = await emailFromCv(candidateId);
 
-    let bookingUrl: string | null = null;
+    // Scheduling options, only for someone being advanced. Google Calendar has
+    // no API for a booking page, so this offers real openings read from Arjun's
+    // calendar and lets the candidate reply with one. A calendar failure is
+    // recorded and the email falls back to "reply with some times" — it never
+    // blocks the decision from being saved.
+    let offer: BookingOffer = { kind: "none" };
     let commsError: string | undefined;
     if (status === "advanced") {
-      const link = await createBookingLink(candidate, email);
-      bookingUrl = link.url;
-      if (link.error) commsError = `No booking link: ${link.error}`;
+      const fixed = bookingUrl();
+      if (fixed) {
+        // A booking page the candidate picks from beats a fixed list of times.
+        offer = { kind: "link", url: withInvitee(fixed, candidate, email) };
+      } else if (calendarConfigured()) {
+        const { slots, error } = await findSlots();
+        if (slots.length) offer = { kind: "slots", slots: slots.map((s) => s.label) };
+        else commsError = `No interview slots offered: ${error ?? "none found"}`;
+      } else {
+        const link = await createBookingLink(candidate, email);
+        if (link.url) offer = { kind: "link", url: link.url };
+        else commsError = `No booking link: ${link.error}`;
+      }
     }
 
     const runId = (await loadLatestRun(role))?.runId ?? "unknown";
@@ -72,8 +106,9 @@ export async function POST(req: Request) {
         state: "pending",
         draftedAt: new Date().toISOString(),
         subject: subjectFor(status, role),
-        body: await draftMessage(candidate, role, status, bookingUrl),
-        bookingUrl: bookingUrl ?? undefined,
+        body: await draftMessage(candidate, role, status, offer),
+        bookingUrl: offer.kind === "link" ? offer.url : undefined,
+        slots: offer.kind === "slots" ? offer.slots : undefined,
         error: commsError,
       },
     };
