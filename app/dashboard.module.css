@@ -49,6 +49,16 @@
   font-weight: 600;
 }
 
+.signOut {
+  padding: 9px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
 .runBtn {
   padding: 9px 18px;
   border-radius: 8px;

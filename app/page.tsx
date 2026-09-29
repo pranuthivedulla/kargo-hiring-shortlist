@@ -152,6 +152,15 @@ export default function Dashboard() {
           <button className={styles.runBtn} onClick={runBatch} disabled={running || loading}>
             {running ? "Running…" : run ? "Re-run batch" : "Run batch"}
           </button>
+          <button
+            className={styles.signOut}
+            onClick={async () => {
+              await fetch("/api/auth/logout", { method: "POST" });
+              window.location.href = "/login";
+            }}
+          >
+            Sign out
+          </button>
         </div>
       </header>
 
@@ -357,9 +366,9 @@ export default function Dashboard() {
           <div className={styles.note}>
             <div className={styles.noteTitle}>Scheduling</div>
             <div className={styles.noteBody}>
-              Advancing a candidate calls Calendly for a single-use booking link and drafts the
-              interview-invite email. Nothing reaches the candidate until you read the draft and
-              confirm it.
+              Advancing a candidate drafts an interview invite carrying a booking link, so they
+              pick a time that suits them. Nothing reaches the candidate until you read the draft
+              and confirm it.
             </div>
           </div>
         </aside>
