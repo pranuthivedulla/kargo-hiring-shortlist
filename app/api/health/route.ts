@@ -3,6 +3,7 @@ import fs from "fs/promises";
 import { APPLICATIONS_DIR, HIRES_DIR, JDS_DIR } from "@/lib/paths";
 import { loadJd } from "@/lib/corpus";
 import { activeProvider, hasKey, modelName } from "@/lib/model";
+import { sendOverride } from "@/lib/comms";
 import { backend } from "@/lib/store";
 
 export const runtime = "nodejs";
@@ -76,5 +77,10 @@ export async function GET() {
     jds: jdCheck,
     model: { provider, model: modelName("ranking", provider), keyPresent: hasKey(provider) },
     storage: { backend: backend(), writable },
+    email: {
+      resendConfigured: !!process.env.RESEND_API_KEY && !!process.env.RESEND_FROM,
+      // A deployment that can send is a deployment a stranger can send from.
+      sendOverrideTo: sendOverride() ?? null,
+    },
   });
 }

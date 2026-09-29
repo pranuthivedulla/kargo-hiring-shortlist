@@ -46,8 +46,26 @@ export function subjectFor(status: DecisionStatus, role: Role): string {
     : `Update on your application — ${ROLE_LABEL[role]} at Kargo`;
 }
 
+/**
+ * When SEND_OVERRIDE_TO is set, every message goes to that one address and no
+ * candidate's address is read from a CV at all.
+ *
+ * This exists because thirty of the CVs are real people who never applied to
+ * Kargo. Testing the send path must not be one mistyped recipient away from
+ * emailing them. The override is enforced twice: here, so the draft never even
+ * shows a real address, and again in /api/send, so editing the field in the
+ * dialog cannot get round it.
+ */
+export function sendOverride(): string | undefined {
+  const v = process.env.SEND_OVERRIDE_TO?.trim();
+  return v ? v : undefined;
+}
+
 /** Best-effort address lifted from the CV text; Arjun confirms it before sending. */
 export async function emailFromCv(candidateId: string): Promise<string | undefined> {
+  const override = sendOverride();
+  if (override) return override;
+
   const parsed = await loadParsed();
   const cv = parsed.find((p) => p.id === candidateId);
   const match = cv?.text.match(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/);

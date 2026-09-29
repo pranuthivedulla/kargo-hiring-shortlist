@@ -19,6 +19,8 @@ type RunPayload = {
   decisions: DecisionsFile;
   available: number;
   batchCap: number;
+  /** When set, every message goes here and no CV address is used. */
+  sendOverrideTo: string | null;
 };
 
 const badgeClass = (s: Signal | undefined) =>
@@ -366,6 +368,7 @@ export default function Dashboard() {
       {pending && (
         <ConfirmDialog
           decision={pending}
+          overrideTo={payload?.sendOverrideTo ?? null}
           onClose={() => setPending(null)}
           onDone={async () => {
             setPending(null);
@@ -393,10 +396,12 @@ function statusLabel(d: Decision) {
 
 function ConfirmDialog({
   decision,
+  overrideTo,
   onClose,
   onDone,
 }: {
   decision: Decision;
+  overrideTo: string | null;
   onClose: () => void;
   onDone: () => Promise<void>;
 }) {
@@ -436,6 +441,13 @@ function ConfirmDialog({
           you want, then send — or close and send later.
         </p>
 
+        {overrideTo && (
+          <div className={styles.override}>
+            <b>Test mode.</b> Every message is sent to <b>{overrideTo}</b>. No address is
+            read from any CV, and editing the field below will not change where this goes.
+          </div>
+        )}
+
         {decision.comms.bookingUrl && (
           <div className={styles.field}>
             <span className={styles.fieldLabel}>Calendly booking link (single use)</span>
@@ -449,10 +461,11 @@ function ConfirmDialog({
           <span className={styles.fieldLabel}>To</span>
           <input
             className={styles.input}
-            value={email}
+            value={overrideTo ?? email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="candidate@example.com"
             type="email"
+            disabled={!!overrideTo}
           />
         </label>
 
@@ -483,7 +496,11 @@ function ConfirmDialog({
           <button className={styles.btnGhost} onClick={() => act(false)} disabled={busy}>
             Mark as handled elsewhere
           </button>
-          <button className={styles.btnSolid} onClick={() => act(true)} disabled={busy || !email}>
+          <button
+            className={styles.btnSolid}
+            onClick={() => act(true)}
+            disabled={busy || !(overrideTo ?? email)}
+          >
             {busy ? "Sending…" : "Send"}
           </button>
         </div>

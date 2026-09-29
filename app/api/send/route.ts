@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { loadDecision, saveDecision } from "@/lib/store";
-import { sendEmail } from "@/lib/comms";
+import { sendEmail, sendOverride } from "@/lib/comms";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -39,7 +39,10 @@ export async function POST(req: Request) {
       );
     }
 
-    const to = typeof body.email === "string" ? body.email.trim() : (decision.email ?? "");
+    // The override wins over anything the dialog posted. Editing the recipient
+    // field must not be a way round it.
+    const override = sendOverride();
+    const to = override ?? (typeof body.email === "string" ? body.email.trim() : (decision.email ?? ""));
     const subject = typeof body.subject === "string" ? body.subject : (decision.comms.subject ?? "");
     const text = typeof body.body === "string" ? body.body : (decision.comms.body ?? "");
 

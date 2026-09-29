@@ -520,6 +520,16 @@
   resize: vertical;
 }
 
+.override {
+  background: var(--accent-wash);
+  border: 1px solid var(--accent-line);
+  color: var(--accent-deep);
+  border-radius: 8px;
+  padding: 10px 13px;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
 .dialogActions {
   display: flex;
   justify-content: flex-end;

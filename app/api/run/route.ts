@@ -3,6 +3,7 @@ import { ingestApplications } from "@/lib/ingest";
 import { BATCH_CAP, runBatch } from "@/lib/rank";
 import { loadDecisions, loadLatestRun, loadParsed, saveParsed } from "@/lib/store";
 import { ROLES, type Role } from "@/lib/paths";
+import { sendOverride } from "@/lib/comms";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -27,6 +28,7 @@ export async function GET(req: Request) {
     decisions,
     available: parsed.filter((p) => p.role === role).length,
     batchCap: BATCH_CAP,
+    sendOverrideTo: sendOverride() ?? null,
   });
 }
 
