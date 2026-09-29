@@ -23,10 +23,34 @@ export async function middleware(req: NextRequest) {
   if (mode === "locked") {
     // Deployed with no APP_PASSWORD. Fail closed rather than publish the
     // dashboard because a variable was forgotten.
+    //
+    // Reports which expected variables the running server can actually see -
+    // names and presence only, never a value. Without this, a variable saved
+    // to the wrong environment or with a typo in its name is indistinguishable
+    // from one that was never added.
+    const expected = [
+      "APP_PASSWORD",
+      "AUTH_SECRET",
+      "GEMINI_API_KEY",
+      "MODEL_PROVIDER",
+      "DATABASE_URL",
+      "BOOKING_URL",
+      "RESEND_API_KEY",
+    ];
+    const seen: Record<string, boolean> = {};
+    for (const k of expected) seen[k] = !!process.env[k];
+
+    // Anything env-looking the platform did inject, so a typo is visible.
+    const similar = Object.keys(process.env)
+      .filter((k) => /PASSWORD|SECRET|AUTH|APP_/i.test(k))
+      .sort();
+
     return NextResponse.json(
       {
         error:
-          "This deployment has no APP_PASSWORD set, so it is locked. Set APP_PASSWORD in the environment.",
+          "This deployment has no APP_PASSWORD set, so it is locked. Set APP_PASSWORD in the environment (Production) and redeploy.",
+        expectedVariables: seen,
+        similarNamesFound: similar,
       },
       { status: 503 },
     );
