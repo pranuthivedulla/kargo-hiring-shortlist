@@ -210,6 +210,13 @@
   color: var(--off);
 }
 
+/* Recommended role, on CVs that arrived without one. */
+.recommend {
+  background: var(--accent-wash);
+  color: var(--accent-deep);
+  border: 1px solid var(--accent-line);
+}
+
 .well {
   display: flex;
   gap: 18px;

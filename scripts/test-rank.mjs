@@ -1,3 +1,4 @@
+import "./use-fixtures.mjs";  // must precede every ../lib/ import
 import { ingestApplications } from "../lib/ingest.ts";
 import { runBatch } from "../lib/rank.ts";
 import { saveParsed, loadLatestRun, backend } from "../lib/store.ts";

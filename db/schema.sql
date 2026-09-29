@@ -13,11 +13,12 @@
 
 -- ---------------------------------------------------------------------------
 -- candidates — the ingestion cache (parsed CV text, keyed by source file)
+-- role OPEN = the CV named no role; triaged against both JDs at ranking time.
 -- ---------------------------------------------------------------------------
 create table if not exists candidates (
   id           text primary key,
   name         text        not null,
-  role         text        not null check (role in ('PM', 'SPM')),
+  role         text        not null check (role in ('PM', 'SPM', 'OPEN')),
   file         text        not null,
   format       text        not null,
   chars        integer     not null default 0,
@@ -33,7 +34,7 @@ create index if not exists candidates_role_idx on candidates (role);
 -- ---------------------------------------------------------------------------
 create table if not exists runs (
   run_id         text primary key,
-  role           text        not null check (role in ('PM', 'SPM')),
+  role           text        not null check (role in ('PM', 'SPM', 'OPEN')),
   created_at     timestamptz not null default now(),
   model          text        not null,
   batch_total    integer     not null,
@@ -51,7 +52,7 @@ create index if not exists runs_role_created_idx on runs (role, created_at desc)
 create table if not exists decisions (
   candidate_id  text primary key,
   candidate     text        not null,
-  role          text        not null check (role in ('PM', 'SPM')),
+  role          text        not null check (role in ('PM', 'SPM', 'OPEN')),
   run_id        text        not null,
   status        text        not null check (status in ('advanced', 'rejected')),
   decided_at    timestamptz not null default now(),
@@ -76,3 +77,14 @@ drop trigger if exists decisions_touch_updated_at on decisions;
 create trigger decisions_touch_updated_at
   before update on decisions
   for each row execute function touch_updated_at();
+
+-- ---------------------------------------------------------------------------
+-- Migration for databases created before the OPEN role existed.
+-- Re-running the CREATE TABLEs above is a no-op, so widen the checks here.
+-- ---------------------------------------------------------------------------
+alter table candidates drop constraint if exists candidates_role_check;
+alter table candidates add  constraint candidates_role_check check (role in ('PM','SPM','OPEN'));
+alter table runs       drop constraint if exists runs_role_check;
+alter table runs       add  constraint runs_role_check       check (role in ('PM','SPM','OPEN'));
+alter table decisions  drop constraint if exists decisions_role_check;
+alter table decisions  add  constraint decisions_role_check  check (role in ('PM','SPM','OPEN'));

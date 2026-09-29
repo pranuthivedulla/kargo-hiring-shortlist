@@ -1,0 +1,146 @@
+{
+  "runId": "PM-2026-09-29T11-13-03-944Z",
+  "role": "PM",
+  "createdAt": "2026-09-29T11:13:03.944Z",
+  "model": "STUB — no model call",
+  "batchTotal": 10,
+  "candidateIds": {
+    "ananya rao": "pm-ananya-rao-pm",
+    "divya nair": "pm-divya-nair-pm",
+    "farhan ali": "pm-farhan-ali-pm",
+    "imran qureshi": "pm-imran-qureshi-pm",
+    "karan mehta": "pm-karan-mehta-pm",
+    "nikhil saxena": "pm-nikhil-saxena-pm",
+    "priya deshmukh": "pm-priya-deshmukh-pm",
+    "rohit bansal": "pm-rohit-bansal-pm",
+    "sneha kapoor": "pm-sneha-kapoor-pm",
+    "vivek joshi": "pm-vivek-joshi-pm"
+  },
+  "shortlist": [
+    {
+      "candidate": "Ananya Rao",
+      "role": "Product Manager",
+      "gate": "PASS",
+      "primary_signal": "STRONG",
+      "primary_evidence": "[STUB] line from PM\\Ananya_Rao_PM.pdf",
+      "secondary_signal": "STRONG",
+      "secondary_evidence": "[STUB] evidence",
+      "rank": 1,
+      "why_ranked_here": "[STUB] no model call was made for this run.",
+      "what_to_probe": [
+        "[STUB] probe question one.",
+        "[STUB] probe question two."
+      ]
+    },
+    {
+      "candidate": "Divya Nair",
+      "role": "Product Manager",
+      "gate": "PASS",
+      "primary_signal": "PARTIAL",
+      "primary_evidence": "[STUB] line from PM\\Divya_Nair_PM.pdf",
+      "secondary_signal": "PARTIAL",
+      "secondary_evidence": "[STUB] evidence",
+      "rank": 2,
+      "why_ranked_here": "[STUB] no model call was made for this run.",
+      "what_to_probe": [
+        "[STUB] probe question one.",
+        "[STUB] probe question two."
+      ]
+    },
+    {
+      "candidate": "Farhan Ali",
+      "role": "Product Manager",
+      "gate": "PASS",
+      "primary_signal": "PARTIAL",
+      "primary_evidence": "[STUB] line from PM\\Farhan_Ali_PM.docx",
+      "secondary_signal": "STRONG",
+      "secondary_evidence": "[STUB] evidence",
+      "rank": 3,
+      "why_ranked_here": "[STUB] no model call was made for this run.",
+      "what_to_probe": [
+        "[STUB] probe question one.",
+        "[STUB] probe question two."
+      ]
+    },
+    {
+      "candidate": "Imran Qureshi",
+      "role": "Product Manager",
+      "gate": "PASS",
+      "primary_signal": "ABSENT",
+      "primary_evidence": "[STUB] line from PM\\Imran_Qureshi_PM.pdf",
+      "secondary_signal": "PARTIAL",
+      "secondary_evidence": "[STUB] evidence",
+      "rank": 4,
+      "why_ranked_here": "[STUB] no model call was made for this run.",
+      "what_to_probe": [
+        "[STUB] probe question one.",
+        "[STUB] probe question two."
+      ]
+    },
+    {
+      "candidate": "Karan Mehta",
+      "role": "Product Manager",
+      "gate": "PASS",
+      "primary_signal": "ABSENT",
+      "primary_evidence": "[STUB] line from PM\\Karan_Mehta_PM.docx",
+      "secondary_signal": "STRONG",
+      "secondary_evidence": "[STUB] evidence",
+      "rank": 5,
+      "why_ranked_here": "[STUB] no model call was made for this run.",
+      "what_to_probe": [
+        "[STUB] probe question one.",
+        "[STUB] probe question two."
+      ]
+    },
+    {
+      "candidate": "Nikhil Saxena",
+      "role": "Product Manager",
+      "gate": "PASS",
+      "primary_signal": "ABSENT",
+      "primary_evidence": "[STUB] line from PM\\Nikhil_Saxena_PM.pdf",
+      "secondary_signal": "PARTIAL",
+      "secondary_evidence": "[STUB] evidence",
+      "rank": 6,
+      "why_ranked_here": "[STUB] no model call was made for this run.",
+      "what_to_probe": [
+        "[STUB] probe question one.",
+        "[STUB] probe question two."
+      ]
+    },
+    {
+      "candidate": "Priya Deshmukh",
+      "role": "Product Manager",
+      "gate": "PASS",
+      "primary_signal": "ABSENT",
+      "primary_evidence": "[STUB] line from PM\\Priya_Deshmukh_PM.docx",
+      "secondary_signal": "STRONG",
+      "secondary_evidence": "[STUB] evidence",
+      "rank": 7,
+      "why_ranked_here": "[STUB] no model call was made for this run.",
+      "what_to_probe": [
+        "[STUB] probe question one.",
+        "[STUB] probe question two."
+      ]
+    }
+  ],
+  "notAdvancing": [
+    {
+      "candidate": "Rohit Bansal",
+      "role": "Product Manager",
+      "status": "GATE_FAILED",
+      "reason": "[STUB] no model call was made for this run."
+    },
+    {
+      "candidate": "Sneha Kapoor",
+      "role": "Product Manager",
+      "status": "RANKED_BUT_NOT_SHORTLISTED",
+      "reason": "[STUB] no model call was made for this run."
+    },
+    {
+      "candidate": "Vivek Joshi",
+      "role": "Product Manager",
+      "status": "RANKED_BUT_NOT_SHORTLISTED",
+      "reason": "Not returned by the ranking run — no assessment was produced for this CV. Review it manually before deciding."
+    }
+  ]
+}

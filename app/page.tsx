@@ -4,12 +4,15 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import styles from "./dashboard.module.css";
 import type { Decision, DecisionsFile, DecisionStatus, RunFile, Signal } from "@/lib/types";
 
-type Role = "PM" | "SPM";
+type Role = "PM" | "SPM" | "OPEN";
 
 const ROLE_LABEL: Record<Role, string> = {
   PM: "Product Manager",
   SPM: "Senior Product Manager",
+  OPEN: "Role not stated",
 };
+
+const ROLES: Role[] = ["PM", "SPM", "OPEN"];
 
 type RunPayload = {
   run: RunFile | null;
@@ -25,7 +28,11 @@ const key = (name: string) => name.toLowerCase().replace(/\s+/g, " ").trim();
 
 export default function Dashboard() {
   const [role, setRole] = useState<Role>("PM");
-  const [data, setData] = useState<Record<Role, RunPayload | null>>({ PM: null, SPM: null });
+  const [data, setData] = useState<Record<Role, RunPayload | null>>({
+    PM: null,
+    SPM: null,
+    OPEN: null,
+  });
   const [loaded, setLoaded] = useState<Partial<Record<Role, true>>>({});
   const [errors, setErrors] = useState<Partial<Record<Role, string>>>({});
   const [running, setRunning] = useState(false);
@@ -148,7 +155,7 @@ export default function Dashboard() {
 
       <div className={styles.tabRow}>
         <div className={styles.tabs} role="tablist" aria-label="Open roles">
-          {(["PM", "SPM"] as Role[]).map((r) => (
+          {ROLES.map((r) => (
             <button
               key={r}
               role="tab"
@@ -203,6 +210,11 @@ export default function Dashboard() {
                   <div className={`${styles.badge} ${badgeClass(c.secondary_signal)}`}>
                     Secondary · {c.secondary_signal}
                   </div>
+                  {c.recommended_role && (
+                    <div className={`${styles.badge} ${styles.recommend}`}>
+                      Suggest · {c.recommended_role}
+                    </div>
+                  )}
                 </div>
 
                 <div className={styles.well}>
@@ -224,6 +236,12 @@ export default function Dashboard() {
                   <strong>Primary:</strong> {c.primary_evidence}
                   <br />
                   <strong>Secondary:</strong> {c.secondary_evidence}
+                  {c.role_rationale && (
+                    <>
+                      <br />
+                      <strong>Why this role:</strong> {c.role_rationale}
+                    </>
+                  )}
                 </div>
 
                 <div className={styles.actions}>
@@ -295,7 +313,11 @@ export default function Dashboard() {
                       <div className={styles.rejectHead}>
                         <span className={styles.rejectName}>{n.candidate}</span>
                         <span className={styles.rejectStatus}>
-                          {n.status === "GATE_FAILED" ? "Gate failed" : "Ranked, not shortlisted"}
+                          {n.recommended_role === "NEITHER"
+                            ? "Fits neither role"
+                            : n.status === "GATE_FAILED"
+                              ? "Gate failed"
+                              : "Ranked, not shortlisted"}
                         </span>
                       </div>
                       <div className={styles.rejectReason}>{n.reason}</div>

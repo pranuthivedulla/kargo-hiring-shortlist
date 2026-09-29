@@ -1,0 +1,114 @@
+{
+  "runId": "SPM-2026-09-29T11-13-04-003Z",
+  "role": "SPM",
+  "createdAt": "2026-09-29T11:13:04.003Z",
+  "model": "STUB — no model call",
+  "batchTotal": 8,
+  "candidateIds": {
+    "aditya kulkarni": "spm-aditya-kulkarni-spm",
+    "arvind menon": "spm-arvind-menon-spm",
+    "gaurav khanna": "spm-gaurav-khanna-spm",
+    "meera iyer": "spm-meera-iyer-spm",
+    "neha verma": "spm-neha-verma-spm",
+    "ritika sen": "spm-ritika-sen-spm",
+    "suresh pillai": "spm-suresh-pillai-spm",
+    "tanvi shah": "spm-tanvi-shah-spm"
+  },
+  "shortlist": [
+    {
+      "candidate": "Aditya Kulkarni",
+      "role": "Senior Product Manager",
+      "gate": "PASS",
+      "primary_signal": "STRONG",
+      "primary_evidence": "[STUB] line from SPM\\Aditya_Kulkarni_SPM.docx",
+      "secondary_signal": "STRONG",
+      "secondary_evidence": "[STUB] evidence",
+      "rank": 1,
+      "why_ranked_here": "[STUB] no model call was made for this run.",
+      "what_to_probe": [
+        "[STUB] probe question one.",
+        "[STUB] probe question two."
+      ]
+    },
+    {
+      "candidate": "Arvind Menon",
+      "role": "Senior Product Manager",
+      "gate": "PASS",
+      "primary_signal": "PARTIAL",
+      "primary_evidence": "[STUB] line from SPM\\Arvind_Menon_SPM.docx",
+      "secondary_signal": "PARTIAL",
+      "secondary_evidence": "[STUB] evidence",
+      "rank": 2,
+      "why_ranked_here": "[STUB] no model call was made for this run.",
+      "what_to_probe": [
+        "[STUB] probe question one.",
+        "[STUB] probe question two."
+      ]
+    },
+    {
+      "candidate": "Gaurav Khanna",
+      "role": "Senior Product Manager",
+      "gate": "PASS",
+      "primary_signal": "PARTIAL",
+      "primary_evidence": "[STUB] line from SPM\\Gaurav_Khanna_SPM.pdf",
+      "secondary_signal": "STRONG",
+      "secondary_evidence": "[STUB] evidence",
+      "rank": 3,
+      "why_ranked_here": "[STUB] no model call was made for this run.",
+      "what_to_probe": [
+        "[STUB] probe question one.",
+        "[STUB] probe question two."
+      ]
+    },
+    {
+      "candidate": "Meera Iyer",
+      "role": "Senior Product Manager",
+      "gate": "PASS",
+      "primary_signal": "ABSENT",
+      "primary_evidence": "[STUB] line from SPM\\Meera_Iyer_SPM.pdf",
+      "secondary_signal": "PARTIAL",
+      "secondary_evidence": "[STUB] evidence",
+      "rank": 4,
+      "why_ranked_here": "[STUB] no model call was made for this run.",
+      "what_to_probe": [
+        "[STUB] probe question one.",
+        "[STUB] probe question two."
+      ]
+    },
+    {
+      "candidate": "Neha Verma",
+      "role": "Senior Product Manager",
+      "gate": "PASS",
+      "primary_signal": "ABSENT",
+      "primary_evidence": "[STUB] line from SPM\\Neha_Verma_SPM.pdf",
+      "secondary_signal": "STRONG",
+      "secondary_evidence": "[STUB] evidence",
+      "rank": 5,
+      "why_ranked_here": "[STUB] no model call was made for this run.",
+      "what_to_probe": [
+        "[STUB] probe question one.",
+        "[STUB] probe question two."
+      ]
+    }
+  ],
+  "notAdvancing": [
+    {
+      "candidate": "Ritika Sen",
+      "role": "Senior Product Manager",
+      "status": "GATE_FAILED",
+      "reason": "[STUB] no model call was made for this run."
+    },
+    {
+      "candidate": "Suresh Pillai",
+      "role": "Senior Product Manager",
+      "status": "RANKED_BUT_NOT_SHORTLISTED",
+      "reason": "[STUB] no model call was made for this run."
+    },
+    {
+      "candidate": "Tanvi Shah",
+      "role": "Senior Product Manager",
+      "status": "RANKED_BUT_NOT_SHORTLISTED",
+      "reason": "Not returned by the ranking run — no assessment was produced for this CV. Review it manually before deciding."
+    }
+  ]
+}

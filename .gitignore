@@ -50,3 +50,8 @@ next-env.d.ts
 /data/runs/
 /data/decisions.json
 /data/parsed-applications.json
+
+# Real candidates' CVs. These are actual people's documents - names, emails and
+# phone numbers - not the course's generated set. They stay on the machine that
+# does the ranking and never reach GitHub or the public deployment.
+/data/applications/OPEN/

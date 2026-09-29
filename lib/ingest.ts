@@ -40,6 +40,8 @@ function detectRole(relPath: string): Role | null {
   const dir = segments.slice(0, -1).map((s) => s.toUpperCase().replace(/[_ ]+/g, "-"));
   if (dir.includes("SPM") || dir.includes("SENIOR-PRODUCT-MANAGER")) return "SPM";
   if (dir.includes("PM") || dir.includes("PRODUCT-MANAGER")) return "PM";
+  // An explicit "no role stated" pile, gated against both JDs later.
+  if (dir.includes("OPEN") || dir.includes("UNASSIGNED")) return "OPEN";
 
   const base = segments[segments.length - 1].toUpperCase();
   if (/(^|[^A-Z])(SPM|SENIOR[_ -]?PRODUCT)/.test(base)) return "SPM";
@@ -55,8 +57,13 @@ function nameFromFile(relPath: string): string {
     // so "Ananya_Rao_PM" would otherwise keep its role tag.
     .replace(/[_\-.]+/g, " ")
     .replace(/\b(SPM|PM|CV|Resume|Senior Product Manager|Product Manager)\b/gi, " ")
+    // Course filenames carry an index: "pm_01_priya_krishnan", "29_rohan_basu".
+    // Without this, every candidate is listed as "01 Priya Krishnan".
+    .replace(/^\s*\d{1,3}\b\s*/, "")
     .replace(/\s+/g, " ")
-    .trim();
+    .trim()
+    // Filenames are lower case; these are shown as names in the dashboard.
+    .replace(/\b[a-z]/g, (c) => c.toUpperCase());
   return cleaned || base;
 }
 
@@ -96,14 +103,16 @@ export async function ingestApplications(): Promise<ParsedCandidate[]> {
     const entry: ParsedCandidate = {
       id: slugId(rel),
       name: nameFromFile(rel),
-      role: role ?? "PM",
+      role: role ?? "OPEN",
       file: rel,
       format: ext,
       chars: 0,
       text: "",
     };
     if (!role) {
-      entry.parseError = "Role could not be determined from folder or filename; defaulted to PM.";
+      entry.role = "OPEN";
+      entry.parseError =
+        "No role could be determined from the folder or filename; treated as role-not-stated.";
     }
 
     try {

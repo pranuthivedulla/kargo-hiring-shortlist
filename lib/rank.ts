@@ -1,6 +1,6 @@
 import { loadHires, loadJd } from "./corpus";
 import { generateText, hasKey, modelLabel } from "./model";
-import { ROLE_LABEL, type Role } from "./paths";
+import { ROLE_LABEL, type NamedRole, type Role } from "./paths";
 import { saveRun } from "./store";
 import type { NotAdvancingEntry, ParsedCandidate, RunFile, ShortlistEntry } from "./types";
 
@@ -62,14 +62,82 @@ profiles with mixed outcomes, treat the Primary Signal pattern as a
 strong prior and flag clear exceptions rather than forcing them
 down mechanically; never blend scores into one hidden number.`;
 
+/**
+ * For CVs that arrived with no role on them. Deliberately a separate prompt:
+ * RANKING_SYSTEM_PROMPT above is specified verbatim for "a single open role"
+ * and must not be edited. This one keeps the same gate/signal vocabulary so the
+ * dashboard reads both kinds of run identically, and adds the role call.
+ */
+export const TRIAGE_SYSTEM_PROMPT = `You are screening candidates who applied to a company without stating
+which of two open roles they want. You will be given: (1) the job descriptions
+for BOTH roles, (2) a set of past-hire calibration profiles for this company
+(outcomes are mixed), and (3) a batch of candidate CVs. Your job is to decide
+which role each person fits, then Gate, then rank, then explain — never to
+silently decide.
+
+STEP 0 — ROLE
+For each candidate, judge which role their CV is a better fit for, from
+evidence in the CV: seniority, scope owned, and years of product experience
+against each JD's stated floor. Output PM, SPM, or NEITHER. NEITHER means the
+CV fails the minimum stated requirements of BOTH job descriptions. Say in one
+sentence what drove the choice. Do not split a candidate across both roles.
+
+STEP 1 — GATE (pass/fail, JD baseline only)
+Against the minimum stated requirements of the role you chose in STEP 0. This
+is a floor, not a ranking signal. Output PASS or FAIL per candidate with the
+specific JD line that drove a FAIL. Anyone scored NEITHER in STEP 0 is a FAIL.
+A FAIL still appears in the final output, never silently dropped.
+
+STEP 2 — PRIMARY SIGNAL (heaviest weight)
+For every PASSed candidate: does their work history show ground-level
+operational exposure to logistics, freight, shipping, or a similarly ops-heavy
+domain, before or alongside their functional career? Evidence-based, not
+keyword matching. Score STRONG / PARTIAL / ABSENT with the specific CV line(s)
+that justify it.
+
+STEP 3 — SECONDARY SIGNAL
+For every PASSed candidate, assess independently: (a) unprompted self-initiated
+fixes later institutionalized, (b) a hard call — including killing/abandoning
+something — made on data, without visibly offloading the decision. Score each
+STRONG / PARTIAL / ABSENT with evidence.
+
+STEP 4 — RANK
+Rank PASSed candidates primarily by Primary Signal, Secondary Signal as
+tiebreaker. Rank them in ONE list across both roles; the recommended role is
+recorded per candidate, not used to split the ranking. Do not let JD-adjacent
+polish (seniority titles, brand-name employers, years above the floor) move a
+candidate up if Primary Signal is ABSENT.
+
+STEP 5 — OUTPUT (strict JSON, two sections, no exceptions)
+SECTION A — shortlist (ranked): for every PASSed candidate —
+{ candidate, role, recommended_role: "PM" | "SPM", role_rationale,
+  gate: "PASS", primary_signal, primary_evidence, secondary_signal,
+  secondary_evidence, rank, why_ranked_here (1-3 sentences, must cite specific
+  evidence), what_to_probe (1-2 concrete interview questions) }
+SECTION B — not advancing: every GATE_FAILED candidate and every
+PASSed-but-excluded candidate —
+{ candidate, role, recommended_role, status: "GATE_FAILED" |
+  "RANKED_BUT_NOT_SHORTLISTED", reason (specific enough that Arjun never needs
+  to reopen the CV) }
+
+HARD CONSTRAINTS: never fabricate experience not stated in the CV; say
+"insufficient evidence" rather than guess; never auto-reject — every candidate
+appears in the output; treat the Primary Signal pattern in the calibration data
+as a strong prior and flag clear exceptions rather than forcing them down
+mechanically; never blend scores into one hidden number.`;
+
 /** Appended so the response is machine-readable without touching the prompt above. */
 const OUTPUT_CONTRACT = `Return ONLY a JSON object, no prose and no code fence, of the shape:
 {"section_a_shortlist": [ ... ], "section_b_not_advancing": [ ... ]}
 "what_to_probe" is an array of 1-2 question strings. Use each candidate's name
 exactly as given in the batch below.`;
 
-function buildUserMessage(jd: string, hires: string, batch: ParsedCandidate[], role: Role): string {
-  const cvs = batch
+const TRIAGE_CONTRACT = `${OUTPUT_CONTRACT}
+Every entry in both sections also carries "recommended_role": "PM", "SPM" or
+"NEITHER". Shortlist entries additionally carry "role_rationale": one sentence.`;
+
+function renderCvs(batch: ParsedCandidate[]): string {
+  return batch
     .map((c, i) => {
       const body = c.text.trim().length
         ? c.text
@@ -78,12 +146,34 @@ function buildUserMessage(jd: string, hires: string, batch: ParsedCandidate[], r
       return `### CANDIDATE ${i + 1}: ${c.name}\n[source file: ${c.file}]${note}\n\n${body}`;
     })
     .join("\n\n---\n\n");
+}
 
+function buildUserMessage(
+  jd: string,
+  hires: string,
+  batch: ParsedCandidate[],
+  role: NamedRole,
+): string {
   return [
     `## (1) JOB DESCRIPTION — ${ROLE_LABEL[role]}\n\n${jd}`,
     `## (2) PAST-HIRE CALIBRATION PROFILES\n\n${hires}`,
-    `## (3) CANDIDATE BATCH — ${batch.length} CVs for ${ROLE_LABEL[role]}\n\n${cvs}`,
+    `## (3) CANDIDATE BATCH — ${batch.length} CVs for ${ROLE_LABEL[role]}\n\n${renderCvs(batch)}`,
     `## OUTPUT\n\n${OUTPUT_CONTRACT}`,
+  ].join("\n\n");
+}
+
+/** Both job descriptions, because these CVs name no role. */
+function buildTriageMessage(
+  jds: Record<NamedRole, string>,
+  hires: string,
+  batch: ParsedCandidate[],
+): string {
+  return [
+    `## (1a) JOB DESCRIPTION — ${ROLE_LABEL.PM}\n\n${jds.PM}`,
+    `## (1b) JOB DESCRIPTION — ${ROLE_LABEL.SPM}\n\n${jds.SPM}`,
+    `## (2) PAST-HIRE CALIBRATION PROFILES\n\n${hires}`,
+    `## (3) CANDIDATE BATCH — ${batch.length} CVs, no role stated on any of them\n\n${renderCvs(batch)}`,
+    `## OUTPUT\n\n${TRIAGE_CONTRACT}`,
   ].join("\n\n");
 }
 
@@ -159,15 +249,25 @@ export async function runBatch(role: Role, candidates: ParsedCandidate[]): Promi
   const batch = candidates.filter((c) => c.role === role).slice(0, BATCH_CAP);
   if (batch.length === 0) throw new Error(`No parsed CVs for ${ROLE_LABEL[role]}.`);
 
-  const [jd, hires] = await Promise.all([loadJd(role), loadHires()]);
-  const userMessage = buildUserMessage(jd, hires, batch, role);
+  const triage = role === "OPEN";
+  const hires = await loadHires();
+
+  let userMessage: string;
+  if (triage) {
+    const [pm, spm] = await Promise.all([loadJd("PM"), loadJd("SPM")]);
+    userMessage = buildTriageMessage({ PM: pm, SPM: spm }, hires, batch);
+  } else {
+    userMessage = buildUserMessage(await loadJd(role), hires, batch, role);
+  }
 
   const text = stub
     ? stubResponse(batch, role)
     : await generateText({
-        system: RANKING_SYSTEM_PROMPT,
+        system: triage ? TRIAGE_SYSTEM_PROMPT : RANKING_SYSTEM_PROMPT,
         prompt: userMessage,
-        maxTokens: 16000,
+        // Triage adds a role call and rationale per candidate on top of
+        // everything the normal run produces.
+        maxTokens: triage ? 24000 : 16000,
         tier: "ranking",
       });
 

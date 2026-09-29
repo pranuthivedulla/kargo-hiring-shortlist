@@ -4,6 +4,7 @@
  *
  *   npx tsx scripts/test-db.mjs
  */
+import "./use-fixtures.mjs";  // must precede every ../lib/ import
 import { loadEnv } from "./load-env.mjs";
 loadEnv();
 process.env.RANK_STUB = "1";

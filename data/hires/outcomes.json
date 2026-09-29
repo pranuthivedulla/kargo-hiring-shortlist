@@ -1,0 +1,13 @@
+{
+  "_note": "Roles, join dates and last ratings are transcribed from the table in Arjun's case brief (Case 2 Pre-Read). The CVs beside this file are the applications those people were hired from. The brief supplies no interview notes, so none are invented here.",
+  "hires": [
+    { "cv": "cv_01_rohan_desai.docx", "name": "Rohan Desai", "role": "Head of Engineering", "joined": "Jul 2022", "rating": "Exceeds Expectations" },
+    { "cv": "cv_02_sunita_krishnamurthy.docx", "name": "Sunita Krishnamurthy", "role": "Operations Lead", "joined": "Jan 2023", "rating": "Exceeds Expectations" },
+    { "cv": "cv_03_vikram_nair.docx", "name": "Vikram Nair", "role": "Product Manager", "joined": "Jun 2023", "rating": "Meets Expectations" },
+    { "cv": "cv_04_aditya_shetty.docx", "name": "Aditya Shetty", "role": "Sales Lead", "joined": "Aug 2023", "rating": "Exceeds Expectations" },
+    { "cv": "cv_05_preetham_rao.docx", "name": "Preetham Rao", "role": "Backend Engineer", "joined": "Feb 2024", "rating": "Below Expectations" },
+    { "cv": "cv_06_meghna_tiwari.docx", "name": "Meghna Tiwari", "role": "Customer Success Manager", "joined": "Aug 2024", "rating": "Exceeds Expectations" },
+    { "cv": "cv_07_lavanya_iyer.docx", "name": "Lavanya Iyer", "role": "Product Manager", "joined": "Apr 2025", "rating": "Exceeds Expectations" },
+    { "cv": "cv_08_rahul_bose.docx", "name": "Rahul Bose", "role": "Growth & Marketing Lead", "joined": "Jun 2025", "rating": "Meets Expectations" }
+  ]
+}

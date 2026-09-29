@@ -14,10 +14,15 @@ export type ParsedCandidate = {
   parseError?: string;   // set when extraction failed; candidate is still listed
 };
 
+export type RecommendedRole = "PM" | "SPM" | "NEITHER";
+
 export type ShortlistEntry = {
   candidate: string;
   role: string;
   gate: "PASS";
+  /** OPEN runs only: which role this CV is a better fit for, and why. */
+  recommended_role?: RecommendedRole;
+  role_rationale?: string;
   primary_signal: Signal;
   primary_evidence: string;
   secondary_signal: Signal;
@@ -30,6 +35,8 @@ export type ShortlistEntry = {
 export type NotAdvancingEntry = {
   candidate: string;
   role: string;
+  /** OPEN runs only: NEITHER when the CV failed the floor for both roles. */
+  recommended_role?: RecommendedRole;
   status: "GATE_FAILED" | "RANKED_BUT_NOT_SHORTLISTED";
   reason: string;
 };

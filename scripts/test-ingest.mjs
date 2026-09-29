@@ -1,3 +1,4 @@
+import "./use-fixtures.mjs";  // must precede every ../lib/ import
 import { ingestApplications } from "../lib/ingest.ts";
 import { saveParsed } from "../lib/store.ts";
 

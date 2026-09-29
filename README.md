@@ -22,27 +22,56 @@ Everything lives in `data/`, read fresh on every run. Replace the files and the
 behaviour changes; no code edit needed.
 
 ```
-data/applications/PM/     candidate CVs (.pdf .docx .txt .md)
-data/applications/SPM/
-data/hires/               calibration profiles (.json or .txt)
+data/applications/PM/     15 CVs that named the role      (committed)
+data/applications/SPM/    15 CVs that named the role      (committed)
+data/applications/OPEN/   30 CVs that named no role       (GITIGNORED - see below)
+data/hires/               8 past-hire CVs + outcomes.json (committed)
 data/jds/                 PM.pdf, SPM.pdf
-data/runs/                one JSON file per batch run
-data/decisions.json       Arjun's advance/reject record
+data/_fixtures/           invented corpus used by the tests
+data/runs/                one JSON file per batch run     (local scratch)
+data/decisions.json       Arjun's advance/reject record   (local scratch)
 ```
 
 Role comes from the folder a CV sits in, falling back to a `PM`/`SPM` token in
-the filename. A CV whose role cannot be resolved is flagged rather than filed
-silently.
+the filename. A CV that resolves to neither is filed under `OPEN` and flagged,
+rather than being guessed into a pool where a wrong guess is invisible.
+
+### `data/applications/OPEN/` is not in git, deliberately
+
+Thirty of the sixty CVs arrived with no role on them, and they are **real
+people's documents** — names, email addresses and eleven phone numbers. They are
+gitignored and must not be committed, must not be seeded into the deployed
+database, and are the reason `RESEND_API_KEY` is kept out of the Vercel
+environment: the deployed site is public for grading, and a stranger clicking
+Reject must not be able to email a real person on behalf of a company that does
+not exist.
+
+The other thirty CVs and the eight past-hire CVs are course-generated and carry
+no real personal data, so they are committed and safe to deploy.
+
+### The OPEN pile is ranked as its own list
+
+`lib/rank.ts` has a second prompt, `TRIAGE_SYSTEM_PROMPT`, used only for `OPEN`.
+It gates against **both** job descriptions, records a `recommended_role` per
+candidate with a one-line rationale, and ranks the whole pile as one list.
+`RANKING_SYSTEM_PROMPT` is specified verbatim for "a single open role" and is
+never edited — the triage prompt is separate and reuses the same gate/signal
+vocabulary so the dashboard reads both kinds of run identically.
+
+This keeps every run inside the brief's 30-per-run cap. Merging the OPEN CVs
+into the PM and SPM pools would have pushed those past 30, and splitting a role
+across two batches would quietly change the ranking, which is relative across
+the batch.
 
 ### Fixtures
 
-`data/applications/` and `data/hires/` currently hold **generated fixtures**, not
-real applications — the real folders had not been supplied when this was built.
-The eight hire profiles use the roster from the case brief (names, roles, join
-dates, ratings) and invent only the narrative body. Every candidate is invented.
+`data/_fixtures/` holds an invented corpus — 18 CVs and 8 hire profiles — used
+by the test suite so tests never touch real candidates' CVs or write them to the
+production database. Tests set `DATA_DIR=data/_fixtures` through
+`scripts/use-fixtures.mjs`, which must be imported before any `lib/` import
+because ES module imports are hoisted.
 
-Regenerate with `python scripts/make_fixtures.py`. To use the real data, empty
-both folders and drop the real files in; nothing else changes.
+Regenerate with `python scripts/make_fixtures.py`.
 
 ## The five stages
 
