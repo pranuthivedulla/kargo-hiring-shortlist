@@ -113,7 +113,10 @@ candidate's inbox.
 |---|---|---|
 | `ANTHROPIC_API_KEY` **or** `GEMINI_API_KEY` | ranking, drafting | ranking refuses; drafting falls back to a fixed template |
 | `RESEND_API_KEY`, `RESEND_FROM` | sending | send fails with a clear error; decision is kept |
-| `CALENDLY_API_KEY`, `CALENDLY_EVENT_TYPE_URI` | booking links | invite asks for times instead of linking |
+| `BOOKING_URL` | booking link | falls through to the options below |
+| `GOOGLE_CLIENT_ID/SECRET/REFRESH_TOKEN` | free/busy slots | falls through |
+| `CALENDLY_API_KEY`, `CALENDLY_EVENT_TYPE_URI` | single-use links | invite asks for times instead of linking |
+| `SEND_OVERRIDE_TO` | testing | addresses come from CVs — see the warning above |
 | `DATABASE_URL` | storage | falls back to JSON files under `data/` (local only) |
 | `RANK_STUB=1` | testing | batch runs return a canned response, no API call |
 
@@ -153,6 +156,28 @@ read through `fs` at request time, and without it production fails with
 > **Before committing real CVs:** these are candidates' names, emails and work
 > histories. Do not push them to a public repository. Either keep the repo
 > private or move `data/applications/` to object storage.
+
+## Scheduling
+
+Four paths, each degrading to the next:
+
+1. **`BOOKING_URL`** — a Google Calendar Appointment Schedule's public page.
+   This is what is in use. Appointment Schedules are a Workspace feature and
+   give the candidate real availability to choose from. There is **no API** to
+   create or read them: the URL is made by hand once, so it is **one link for
+   everyone, not single-use per candidate**. Anyone who receives it could
+   forward it.
+2. **Google OAuth** (`lib/gcal.ts`) — reads free/busy and offers real open
+   slots in the email, at most two per day so options span the week. Scope is
+   `calendar.readonly`: the app never writes to the calendar and never sends an
+   invite nobody asked for. Set up with `npx tsx scripts/google-auth.mjs`.
+   Written and compiling, but **not exercised against live Google credentials**.
+3. **Calendly** — genuine single-use links, if `POST /scheduling_links` is
+   available on the plan.
+4. **Nothing** — the email asks the candidate to reply with times.
+
+Interview length comes from `INTERVIEW_MINUTES` (default 45) and is shared by
+the email text and the slot finder, so the two cannot disagree.
 
 ## Tests
 

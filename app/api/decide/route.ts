@@ -26,10 +26,18 @@ export async function GET() {
  * Arjun's click. This is the ONLY thing that changes a candidate's status, and
  * the only thing that produces a draft or a booking link. It does not send.
  */
-/** Pre-fills the invitee's details on a Google or Calendly booking page. */
+/**
+ * Pre-fills the invitee on booking pages that document support for it.
+ *
+ * Calendly does. Google Calendar Appointment Schedules do not, and their short
+ * calendar.app.google links 302 to the real page, which drops query parameters
+ * anyway — so adding them there would put visible, useless junk in a
+ * candidate's email. Google's own form asks for name and email instead.
+ */
 function withInvitee(base: string, name: string, email?: string): string {
   try {
     const u = new URL(base);
+    if (!/(^|\.)calendly\.com$/i.test(u.hostname)) return base;
     u.searchParams.set("name", name);
     if (email) u.searchParams.set("email", email);
     return u.toString();
