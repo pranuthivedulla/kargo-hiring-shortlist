@@ -3,6 +3,10 @@ import { runBatch } from "../lib/rank.ts";
 import { saveParsed, loadLatestRun, backend } from "../lib/store.ts";
 import { loadJd, loadHires } from "../lib/corpus.ts";
 
+// Force the file backend. This test writes STUB runs; if it reached the real
+// database the deployed site would show "[STUB] no model call was made".
+delete process.env.DATABASE_URL;
+
 let failures = 0;
 const check = (label, cond, detail = "") => {
   console.log(`${cond ? "  ok  " : "  FAIL"} ${label}${detail ? " — " + detail : ""}`);
