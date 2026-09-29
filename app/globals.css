@@ -1,0 +1,73 @@
+:root {
+  --paper: #f7f5f0;
+  --card: #ffffff;
+  --ink: #1e1b16;
+  --ink-2: #3a352c;
+  --muted: #756f62;
+  --faint: #8d8471;
+  --line: #e4dfd3;
+  --line-soft: #f0ece1;
+  --well: #faf8f3;
+  --tabs-bg: #efebe1;
+  --accent: #a8571d;
+  --accent-deep: #7c4014;
+  --accent-wash: #fbeee2;
+  --accent-line: #f0d3b4;
+  --good: #2f6b3a;
+  --good-wash: #e7f2e8;
+  --warn: #7d5f13;
+  --warn-wash: #fbf1dd;
+  --off: #6f6959;
+  --off-wash: #f1efe9;
+  --danger: #9b2c2c;
+  --danger-wash: #fbeaea;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--accent);
+}
+
+a:hover {
+  color: var(--accent-deep);
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d8d2c4;
+  border-radius: 8px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}

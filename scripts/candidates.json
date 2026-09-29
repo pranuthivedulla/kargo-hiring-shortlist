@@ -1,0 +1,106 @@
+[
+{"role":"PM","fmt":"pdf","name":"Ananya Rao","head":"Mumbai · ananya.rao@example.com · +91 98200 11234",
+ "body":["PROFILE","Product manager, 3 years. Previously two years in freight operations. Based in Mumbai.","",
+ "EXPERIENCE","Product Manager, Shiprocket-adjacent SaaS (Mumbai) — Mar 2023 to present","- Own the shipment-status module used by 400+ mid-market sellers.","- Shipped a carrier-exception alert after sitting three weeks on the ops floor watching agents re-key AWB numbers by hand. Nobody asked for it; it is now part of onboarding for every new customer.","- Killed a planned white-label tracking page in month two after usage data showed 2% of sellers opened it. Wrote the memo, took the call, told the two customers who had asked for it.","",
+ "Operations Analyst, Jeena & Company (freight forwarder, Mumbai) — Jun 2021 to Feb 2023","- Worked the documentation desk: bills of lading, certificates of origin, customs filings.","- Handled port-side escalations at JNPT, including physical visits when consignments were held.","",
+ "EDUCATION","B.Com, Mumbai University, 2021"]},
+
+{"role":"PM","fmt":"docx","name":"Farhan Ali","head":"Bengaluru · farhan.ali@example.com",
+ "body":["SUMMARY","Senior-track Product Manager, 4 years across two well-known consumer technology companies. Willing to relocate to Mumbai.","",
+ "EXPERIENCE","Product Manager, a large food-delivery company (Bengaluru) — 2023 to present","- Owned the payments surface in the consumer app; A/B tested checkout copy and layout across 11 releases.","- Ran quarterly roadmap planning for a pod of 9 engineers.","",
+ "Associate Product Manager, a large e-commerce marketplace (Bengaluru) — 2021 to 2023","- Worked on the loyalty programme. Shipped tier upgrades and a referral flow.","",
+ "Consistently rated top-quartile. Strong stakeholder management and executive communication.","",
+ "EDUCATION","B.Tech, 2021. MBA coursework, part-time."]},
+
+{"role":"PM","fmt":"pdf","name":"Divya Nair","head":"Navi Mumbai · divya.nair@example.com",
+ "body":["PROFILE","Product manager with a customs and documentation background.","",
+ "EXPERIENCE","Product Manager, a freight-booking platform (Mumbai) — Jan 2024 to present","- Own the documentation workflow product: shipping bills, invoices, packing lists.","- Rebuilt the HS-code lookup after noticing operators kept a personal Excel sheet beside the tool. I built the first version myself over two weekends before asking for engineering time.","",
+ "Customs Documentation Executive, CHA firm, Nhava Sheva — 2020 to 2023","- Filed bills of entry and shipping bills daily. Dealt with query resolution at the customs house in person.","",
+ "EDUCATION","BA Economics, 2020"]},
+
+{"role":"PM","fmt":"docx","name":"Rohit Bansal","head":"Pune · rohit.bansal@example.com",
+ "body":["SUMMARY","Product Manager with 1 year 6 months of product experience, transitioning from business analysis.","",
+ "EXPERIENCE","Product Manager, a dispatch-planning SaaS company (Pune) — Apr 2025 to present","- Support the dispatch planning module. Write user stories and run UAT.","",
+ "Business Analyst, a large IT services firm — 2021 to 2025","- Requirements gathering for a supply-chain client. Wrote BRDs and FRDs.","",
+ "EDUCATION","B.E. Computer Science, 2021"]},
+
+{"role":"PM","fmt":"pdf","name":"Sneha Kapoor","head":"Delhi · sneha.kapoor@example.com",
+ "body":["SUMMARY","Business analyst, 5 years. Seeking a product role. Not open to relocation; Delhi NCR only.","",
+ "EXPERIENCE","Senior Business Analyst, a large last-mile logistics company (Gurugram) — 2022 to present","- Build dashboards on first-attempt delivery rates and RTO.","- Support the product team with data pulls and analysis.","",
+ "Business Analyst, a business-process firm — 2019 to 2022","- Process mapping and reporting for a logistics client.","",
+ "EDUCATION","B.Sc Statistics, 2019"]},
+
+{"role":"PM","fmt":"docx","name":"Karan Mehta","head":"Mumbai · karan.mehta@example.com",
+ "body":["SUMMARY","Product Manager, 2.5 years, B2B supply-chain SaaS.","",
+ "EXPERIENCE","Product Manager, a logistics-visibility SaaS company (remote, Mumbai-based) — Oct 2023 to present","- Own the carrier-integration onboarding flow.","- Deprecated a bulk-upload feature after six weeks of usage data showed three accounts using it; migrated them myself rather than handing it to support.","",
+ "Product Intern → Associate PM, a dispatch-optimisation company — 2022 to 2023","- Two internship rotations, one of which involved three weeks riding along with a 3PL's dispatch team in Bhiwandi.","",
+ "EDUCATION","B.Tech, Mumbai, 2022"]},
+
+{"role":"PM","fmt":"pdf","name":"Vivek Joshi","head":"Mumbai · vivek.joshi@example.com",
+ "body":["SUMMARY","Product Manager, 3 years, B2B SaaS.","",
+ "EXPERIENCE","Product Manager, a CRM software company (Chennai, relocating to Mumbai) — 2023 to present","- Own a reporting module in the CRM product. Maintain the roadmap and write specs.","- Coordinate between design and engineering; run sprint ceremonies.","",
+ "Associate Product Manager, a business-software company — 2022 to 2023","- Supported the helpdesk product. Wrote release notes and competitive analyses.","",
+ "EDUCATION","MBA, 2022"]},
+
+{"role":"PM","fmt":"docx","name":"Priya Deshmukh","head":"Thane · priya.deshmukh@example.com",
+ "body":["PROFILE","Product manager, 2 years, previously warehouse operations.","",
+ "EXPERIENCE","Product Manager, a warehouse-inventory SaaS company (Mumbai) — Sep 2024 to present","- Own the inventory-accuracy product for warehouse clients.","- Built a cycle-count reconciliation view after spending a week on night shift at a client warehouse in Bhiwandi and seeing the count sheets being reconciled on paper at 4am.","",
+ "Warehouse Shift Supervisor, a large e-commerce fulfilment centre (Bhiwandi) — 2021 to 2024","- Ran a 60-person pick-pack shift. Owned the daily exception queue.","",
+ "EDUCATION","B.Com, 2021"]},
+
+{"role":"PM","fmt":"pdf","name":"Nikhil Saxena","head":"Mumbai · nikhil.saxena@example.com",
+ "body":["SUMMARY","Product Manager, 3 years, fintech.","",
+ "EXPERIENCE","Product Manager, a payments company (Bengaluru; Mumbai-based since 2025) — 2022 to present","- Own the settlement reconciliation product used by merchant finance teams.","- Killed an in-house dispute-management build after a two-week spike showed the vendor option was six months faster; presented the reversal to the same leadership that had approved the build.","",
+ "EDUCATION","B.Tech, 2019. Two years as a management consultant before product."]},
+
+{"role":"PM","fmt":"pdf","name":"Imran Qureshi","head":"","body":[],"blank":true},
+
+{"role":"SPM","fmt":"pdf","name":"Ritika Sen","head":"Mumbai · ritika.sen@example.com",
+ "body":["PROFILE","Senior Product Manager, 7 years product, preceded by three years in warehouse and line-haul operations.","",
+ "EXPERIENCE","Senior Product Manager, a large express logistics company (Mumbai) — 2021 to present","- Own the carrier and ERP integration layer: EDI feeds, port-portal connectors, customer TMS integrations.","- Made the call to stop building a bespoke connector for the second-largest customer and offer a configuration path instead. Leadership had promised the connector. I wrote the note, took the customer call, and held the line; two years on it is the standard pattern.","- Set the data-quality SLA the operations team now runs on.","",
+ "Product Manager, a long-haul trucking company — 2019 to 2021","- Owned the relay-driver scheduling product. No senior PM above me.","",
+ "Operations, a surface-transport company (Bhiwandi and Nagpur hubs) — 2016 to 2019","- Line-haul planning and hub exception handling. Three years on the floor.","",
+ "EDUCATION","B.E. Mechanical, 2016"]},
+
+{"role":"SPM","fmt":"docx","name":"Aditya Kulkarni","head":"Mumbai · aditya.kulkarni@example.com",
+ "body":["SUMMARY","Senior Product Manager, 6 years, platform and integrations.","",
+ "EXPERIENCE","Senior Product Manager, a logistics-automation platform (Gurugram; relocating to Mumbai) — 2020 to present","- Own the integration platform: carrier APIs, ERP connectors, customer webhooks. No senior PM above me; report to the VP Product.","- Decided to stop supporting a legacy SOAP integration used by four customers after mapping the maintenance cost; migrated all four personally over a quarter.","- Spent extended periods embedded with customer operations teams during rollouts, including at port-side offices in Mundra.","",
+ "Product Manager, a business-software company — 2018 to 2020","",
+ "EDUCATION","B.Tech, 2018"]},
+
+{"role":"SPM","fmt":"pdf","name":"Meera Iyer","head":"Mumbai · meera.iyer@example.com",
+ "body":["SUMMARY","Senior Product Manager, 8 years, developer platforms and data infrastructure. No logistics background.","",
+ "EXPERIENCE","Senior Product Manager, an API tooling company (Bengaluru; Mumbai-based) — 2021 to present","- Own the API governance layer. Sole PM for the area; no senior PM above.","- Deprecated a schema-validation service I had launched two years earlier once adoption stalled at 4%; ran the sunset and the customer communication myself.","- Introduced the review standard the wider PM team now uses.","",
+ "Product Manager, a collaboration-software company — 2018 to 2021","- Owned the integrations marketplace.","",
+ "EDUCATION","B.Tech, 2017"]},
+
+{"role":"SPM","fmt":"docx","name":"Suresh Pillai","head":"Chennai · suresh.pillai@example.com",
+ "body":["SUMMARY","Product Manager, 6 years, enterprise software.","",
+ "EXPERIENCE","Product Manager, a large enterprise-software vendor (Chennai) — 2019 to present","- Work within the supply-chain cloud product under a Group Product Manager and a Senior Director of Product.","- Execute on the roadmap set by the GPM; write PRDs and coordinate with engineering overseas.","- All prioritisation decisions go through the product council.","",
+ "EDUCATION","MBA, 2019"]},
+
+{"role":"SPM","fmt":"pdf","name":"Neha Verma","head":"Mumbai · neha.verma@example.com",
+ "body":["SUMMARY","Senior Product Manager, 6 years, consumer subscription products.","",
+ "EXPERIENCE","Senior Product Manager, a streaming company (Mumbai) — 2021 to present","- Own the subscription and billing surface. Sole PM for the area, reporting to the Director of Product.","- Ran pricing experiments and the annual plan migration.","",
+ "Product Manager, a digital media company — 2019 to 2021","- Owned the onboarding funnel.","",
+ "EDUCATION","MBA, 2019"]},
+
+{"role":"SPM","fmt":"docx","name":"Arvind Menon","head":"Mumbai · arvind.menon@example.com",
+ "body":["PROFILE","Senior Product Manager, 5 years, after four years as a licensed customs house agent.","",
+ "EXPERIENCE","Senior Product Manager, an air-cargo software company (Mumbai) — 2022 to present","- Own the air-cargo messaging layer: Cargo-IMP and Cargo-XML integrations with airlines and ground handlers. No senior PM above me.","- Chose not to build a promised in-house rate engine after a build-versus-configure review; told the two customers who had been promised it.","",
+ "Product Manager, a port-systems software company — 2020 to 2022","- Owned the port community system integrations at JNPT and Mundra.","",
+ "Customs House Agent, licensed — 2016 to 2020","- Filed and cleared consignments at Nhava Sheva daily.","",
+ "EDUCATION","B.Com, 2016"]},
+
+{"role":"SPM","fmt":"pdf","name":"Gaurav Khanna","head":"Mumbai · gaurav.khanna@example.com",
+ "body":["SUMMARY","Group Product Manager, 9 years. Ex-strategy consultant. Top-tier MBA.","",
+ "EXPERIENCE","Group Product Manager, a large fintech (Mumbai) — 2022 to present","- Lead a team of four PMs across payments and lending surfaces.","- Presented product strategy to the board twice; ran the annual planning cycle.","",
+ "Engagement Manager, a global strategy consultancy — 2017 to 2022","- Advised banking and telecom clients on digital transformation.","",
+ "EDUCATION","MBA, 2017. B.Tech, 2013."]},
+
+{"role":"SPM","fmt":"docx","name":"Tanvi Shah","head":"Mumbai · tanvi.shah@example.com",
+ "body":["SUMMARY","Senior Product Manager, 5 years, B2B logistics data products.","",
+ "EXPERIENCE","Senior Product Manager, a shipping-data company (remote, Mumbai) — 2022 to present","- Own the ETA prediction and vessel-tracking data products consumed by freight forwarders.","- Sole PM for the area; the CEO is the only person above me on product calls.","- Cut the scope of a customer-specific reporting build in half after two weeks of interviews showed the requested fields were never used in the customer's own weekly meeting. I sat in that meeting to check.","",
+ "Product Manager, a dispatch-optimisation company — 2020 to 2022","- Owned the dispatch-optimisation configuration layer.","",
+ "EDUCATION","B.Tech, 2019"]}
+]
