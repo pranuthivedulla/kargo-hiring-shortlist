@@ -7,11 +7,12 @@ const nextConfig: NextConfig = {
   // production with "No job description found" while working fine locally.
   //
   // data/runs and data/decisions.json are deliberately NOT listed: those are
-  // written at runtime and live in Supabase once it is configured.
+  // written at runtime and live in Postgres once DATABASE_URL is set.
   outputFileTracingIncludes: {
     "/api/run": ["./data/applications/**/*", "./data/jds/**/*", "./data/hires/**/*"],
     "/api/ingest": ["./data/applications/**/*"],
     "/api/decide": ["./data/applications/**/*"],
+    "/api/health": ["./data/applications/**/*", "./data/jds/**/*", "./data/hires/**/*"],
   },
 };
 
