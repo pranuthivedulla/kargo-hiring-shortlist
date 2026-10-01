@@ -215,17 +215,6 @@ export default function Dashboard() {
                     <div className={styles.name}>{c.candidate}</div>
                     <div className={styles.role}>{c.role}</div>
                   </div>
-                  <div className={`${styles.badge} ${badgeClass(c.primary_signal)}`}>
-                    Primary · {c.primary_signal}
-                  </div>
-                  <div className={`${styles.badge} ${badgeClass(c.secondary_signal)}`}>
-                    Secondary · {c.secondary_signal}
-                  </div>
-                  {c.recommended_role && (
-                    <div className={`${styles.badge} ${styles.recommend}`}>
-                      Suggest · {c.recommended_role}
-                    </div>
-                  )}
                 </div>
 
                 <div className={styles.well}>
@@ -243,15 +232,28 @@ export default function Dashboard() {
                   </div>
                 </div>
 
+                {/* Each score sits with the evidence that produced it: a bare
+                    STRONG at the top of the card is an assertion, not a reason. */}
                 <div className={styles.evidence}>
-                  <strong>Primary:</strong> {c.primary_evidence}
-                  <br />
-                  <strong>Secondary:</strong> {c.secondary_evidence}
+                  <div className={styles.evidenceRow}>
+                    <span className={`${styles.badge} ${badgeClass(c.primary_signal)}`}>
+                      Primary · {c.primary_signal}
+                    </span>
+                    <span className={styles.evidenceText}>{c.primary_evidence}</span>
+                  </div>
+                  <div className={styles.evidenceRow}>
+                    <span className={`${styles.badge} ${badgeClass(c.secondary_signal)}`}>
+                      Secondary · {c.secondary_signal}
+                    </span>
+                    <span className={styles.evidenceText}>{c.secondary_evidence}</span>
+                  </div>
                   {c.role_rationale && (
-                    <>
-                      <br />
-                      <strong>Why this role:</strong> {c.role_rationale}
-                    </>
+                    <div className={styles.evidenceRow}>
+                      <span className={`${styles.badge} ${styles.recommend}`}>
+                        Suggest · {c.recommended_role}
+                      </span>
+                      <span className={styles.evidenceText}>{c.role_rationale}</span>
+                    </div>
                   )}
                 </div>
 

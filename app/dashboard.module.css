@@ -266,11 +266,28 @@
 }
 
 .evidence {
-  font-size: 12px;
-  line-height: 1.5;
-  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   border-left: 2px solid var(--line);
-  padding-left: 10px;
+  padding-left: 12px;
+}
+
+/* Score and the evidence for it, side by side — the badge is the claim, the
+   text beside it is why. */
+.evidenceRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.evidenceText {
+  flex: 1;
+  min-width: 240px;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--muted);
 }
 
 .evidence strong {
