@@ -2,7 +2,7 @@ import { loadHires, loadJd } from "./corpus";
 import { generateText, hasKey, modelLabel } from "./model";
 import { ROLE_LABEL, type NamedRole, type Role } from "./paths";
 import { saveRun } from "./store";
-import type { NotAdvancingEntry, ParsedCandidate, RunFile, ShortlistEntry } from "./types";
+import type { NotAdvancingEntry, ParsedCandidate, RunFile, ShortlistEntry, Signal } from "./types";
 
 /** One role's full batch, per the brief. */
 export const BATCH_CAP = 30;
@@ -203,8 +203,44 @@ function parseJson(text: string): { a: ShortlistEntry[]; b: NotAdvancingEntry[] 
       what_to_probe: Array.isArray(e.what_to_probe)
         ? e.what_to_probe
         : [String(e.what_to_probe ?? "")].filter(Boolean),
+      ...splitSecondary(e),
     })),
     b,
+  };
+}
+
+const RANKED: Signal[] = ["ABSENT", "PARTIAL", "STRONG"];
+
+/**
+ * STEP 3 asks for two assessments — self-initiated fixes, and a hard call —
+ * and says to "Score each". So a model may legitimately answer with an object
+ * of two scores rather than one string, and the triage run did exactly that
+ * while the PM and SPM runs returned a string.
+ *
+ * Both are kept. The headline is the stronger of the two, because the question
+ * is whether the candidate has shown either trait; the breakdown is prepended
+ * to the evidence so nothing is hidden behind that single word. No numbers are
+ * blended — the grading stays three named levels.
+ */
+function splitSecondary(e: ShortlistEntry): Partial<ShortlistEntry> {
+  const raw = e.secondary_signal as unknown;
+  if (typeof raw === "string" || raw == null) return {};
+  if (typeof raw !== "object") return { secondary_signal: String(raw) as Signal };
+
+  const parts = Object.entries(raw as Record<string, unknown>)
+    .map(([k, v]) => [k.replace(/_/g, " "), String(v).toUpperCase()] as const)
+    .filter(([, v]) => RANKED.includes(v as Signal));
+
+  if (parts.length === 0) return { secondary_signal: "ABSENT" };
+
+  const strongest = parts.reduce((best, [, v]) =>
+    RANKED.indexOf(v as Signal) > RANKED.indexOf(best) ? (v as Signal) : best,
+  "ABSENT" as Signal);
+
+  const breakdown = parts.map(([k, v]) => `${k}: ${v}`).join(" · ");
+  return {
+    secondary_signal: strongest,
+    secondary_evidence: `(${breakdown}) ${e.secondary_evidence ?? ""}`.trim(),
   };
 }
 

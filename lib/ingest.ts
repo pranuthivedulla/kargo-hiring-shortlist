@@ -9,6 +9,12 @@ const SUPPORTED = new Set([".pdf", ".docx", ".txt", ".md"]);
 function normalize(raw: string): string {
   return raw
     .replace(/\r\n?/g, "\n")
+    // Real CVs carry control characters that extraction passes straight
+    // through. Postgres cannot store NUL (0x00) in a text column at all — it
+    // rejects the whole insert — and the rest are invisible noise in a prompt.
+    // Tab and newline are kept; the others go.
+     
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "")
     .replace(/[ \t ]+/g, " ")
     .replace(/ ?\n ?/g, "\n")
     .replace(/\n{3,}/g, "\n\n")
