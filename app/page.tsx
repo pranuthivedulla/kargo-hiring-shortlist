@@ -288,6 +288,8 @@ export default function Dashboard() {
         </section>
 
         <aside className={styles.sidebar}>
+          <UploadPanel role={role} onUploaded={() => load(role)} />
+
           <div className={styles.panel}>
             <div className={styles.panelTitle}>Batch summary</div>
             <div className={styles.statRow}>
@@ -384,6 +386,110 @@ export default function Dashboard() {
             await load(role);
           }}
         />
+      )}
+    </div>
+  );
+}
+
+type UploadResult = {
+  accepted: { name: string; role: Role; chars: number; replaced: boolean }[];
+  rejected: { name: string; reason: string }[];
+  total: number;
+  note: string;
+};
+
+/**
+ * Adds CVs without a developer, a commit or a redeploy. Only the extracted
+ * text is kept — the original file is never read again — so this works on a
+ * platform with a read-only filesystem.
+ */
+function UploadPanel({ role, onUploaded }: { role: Role; onUploaded: () => void }) {
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState<UploadResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const upload = async (files: FileList | null) => {
+    if (!files?.length) return;
+    setBusy(true);
+    setError(null);
+    setResult(null);
+    try {
+      const body = new FormData();
+      // The open tab means "work the role out"; the others file it explicitly.
+      body.append("role", role === "OPEN" ? "AUTO" : role);
+      for (const f of Array.from(files)) body.append("files", f);
+
+      const res = await fetch("/api/upload", { method: "POST", body });
+      const json = (await res.json()) as UploadResult & { error?: string };
+      if (!res.ok) throw new Error(json.error ?? "Upload failed.");
+      setResult(json);
+      onUploaded();
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className={styles.panel}>
+      <div className={styles.panelTitle}>Add CVs</div>
+      <p className={styles.uploadLead}>
+        {role === "OPEN"
+          ? "Filed by role if the filename says so, otherwise as role-not-stated."
+          : `Filed as ${ROLE_LABEL[role]}.`}{" "}
+        PDF, DOCX, TXT or MD.
+      </p>
+
+      <label className={styles.uploadBtn}>
+        {busy ? "Reading…" : "Choose files"}
+        <input
+          type="file"
+          multiple
+          accept=".pdf,.docx,.txt,.md"
+          disabled={busy}
+          hidden
+          onChange={(e) => {
+            void upload(e.target.files);
+            e.target.value = "";
+          }}
+        />
+      </label>
+
+      {error && <div className={styles.error}>{error}</div>}
+
+      {result && (
+        <div className={styles.uploadResult}>
+          {result.accepted.length > 0 && (
+            <>
+              <div className={styles.uploadHeading}>
+                Stored {result.accepted.length} — run a batch to rank them
+              </div>
+              {result.accepted.map((a) => (
+                <div key={a.name} className={styles.uploadRow}>
+                  <span>
+                    {a.name} <span className={styles.uploadRole}>{a.role}</span>
+                  </span>
+                  <span className={styles.uploadChars}>
+                    {a.replaced ? "replaced · " : ""}
+                    {a.chars.toLocaleString()} chars
+                  </span>
+                </div>
+              ))}
+            </>
+          )}
+          {result.rejected.length > 0 && (
+            <>
+              <div className={styles.uploadHeading}>Not stored</div>
+              {result.rejected.map((r) => (
+                <div key={r.name} className={styles.uploadRow}>
+                  <span>{r.name}</span>
+                  <span className={styles.uploadChars}>{r.reason}</span>
+                </div>
+              ))}
+            </>
+          )}
+        </div>
       )}
     </div>
   );

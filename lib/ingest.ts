@@ -99,6 +99,59 @@ async function walk(dir: string, base = dir): Promise<string[]> {
   return out.sort();
 }
 
+/**
+ * One uploaded CV, parsed exactly as a file on disk would be — same extraction,
+ * same normalisation (which strips the NUL bytes Postgres rejects), same
+ * role detection and name cleaning. An upload must not behave differently from
+ * a file dropped into data/applications.
+ *
+ * `role` overrides filename detection when the uploader picked one; null means
+ * "work it out", which falls back to OPEN and gets triaged against both JDs.
+ */
+export async function parseUpload(
+  filename: string,
+  buf: Buffer,
+  role: Role | null,
+): Promise<ParsedCandidate> {
+  const ext = path.extname(filename).toLowerCase();
+  if (!SUPPORTED.has(ext)) {
+    throw new Error(`Unsupported file type "${ext || filename}". Use PDF, DOCX, TXT or MD.`);
+  }
+  const format = ext.slice(1) as ParsedCandidate["format"];
+
+  // Uploads are filed under their role so a later disk ingest cannot collide
+  // with them, and so the source is obvious when reading the table.
+  const rel = `${role ?? detectRole(filename) ?? "OPEN"}/${path.basename(filename)}`;
+
+  const entry: ParsedCandidate = {
+    id: slugId(`uploaded/${rel}`),
+    name: nameFromFile(filename),
+    role: role ?? detectRole(filename) ?? "OPEN",
+    file: `uploaded/${rel}`,
+    format,
+    chars: 0,
+    text: "",
+  };
+
+  if (!role && !detectRole(filename)) {
+    entry.parseError =
+      "No role was given and none could be read from the filename; treated as role-not-stated.";
+  }
+
+  let raw: string;
+  if (format === "pdf") raw = await extractPdf(buf);
+  else if (format === "docx") raw = await extractDocx(buf);
+  else raw = buf.toString("utf8");
+
+  entry.text = normalize(raw);
+  entry.chars = entry.text.length;
+  if (entry.chars < 200) {
+    entry.parseError = `Only ${entry.chars} characters extracted — likely a scanned or image-only file.`;
+  }
+
+  return entry;
+}
+
 export async function ingestApplications(): Promise<ParsedCandidate[]> {
   const files = await walk(APPLICATIONS_DIR);
   const parsed: ParsedCandidate[] = [];

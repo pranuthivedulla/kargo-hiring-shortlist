@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { ingestApplications } from "@/lib/ingest";
 import { BATCH_CAP, runBatch } from "@/lib/rank";
-import { loadDecisions, loadLatestRun, loadParsed, saveParsed } from "@/lib/store";
+import { allCandidates, loadDecisions, loadLatestRun, loadParsed, saveParsed } from "@/lib/store";
 import { ROLES, type Role } from "@/lib/paths";
 import { sendOverride } from "@/lib/comms";
 
@@ -42,10 +42,12 @@ export async function POST(req: Request) {
 
     // Re-ingest first so a CV dropped into data/applications since the last run
     // is included without a separate step.
-    const parsed = await ingestApplications();
-    await saveParsed(parsed);
+    const fromDisk = await ingestApplications();
+    await saveParsed(fromDisk);
 
-    const { run, missing } = await runBatch(body.role, parsed);
+    // Rank everything the store knows about, not just what is on disk, so
+    // uploaded CVs are included rather than silently skipped.
+    const { run, missing } = await runBatch(body.role, await allCandidates(fromDisk));
     return NextResponse.json({ run, missing });
   } catch (err) {
     return NextResponse.json(

@@ -53,6 +53,21 @@ const toCandidate = (r: CandidateRow): ParsedCandidate => ({
   ...(r.parse_error ? { parseError: r.parse_error } : {}),
 });
 
+/**
+ * Disk ingestion plus anything uploaded, keyed by id so a re-ingest refreshes
+ * the disk ones without discarding uploads.
+ *
+ * This is what ranking reads. Before uploads existed, ranking took the array
+ * ingestApplications() returned, which meant an uploaded CV could be stored
+ * and then silently ignored by the next batch.
+ */
+export async function allCandidates(fromDisk: ParsedCandidate[]): Promise<ParsedCandidate[]> {
+  const stored = await loadParsed();
+  const byId = new Map(stored.map((c) => [c.id, c]));
+  for (const c of fromDisk) byId.set(c.id, c);
+  return [...byId.values()].sort((a, b) => a.name.localeCompare(b.name));
+}
+
 export async function saveParsed(items: ParsedCandidate[]): Promise<void> {
   if (backend() === "file") {
     await fs.mkdir(path.dirname(PARSED_FILE), { recursive: true });

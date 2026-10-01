@@ -11,7 +11,7 @@ import { loadEnv } from "./load-env.mjs";
 loadEnv();
 
 const { ingestApplications } = await import("../lib/ingest.ts");
-const { saveParsed, backend } = await import("../lib/store.ts");
+const { saveParsed, allCandidates, backend } = await import("../lib/store.ts");
 const { runBatch, BATCH_CAP } = await import("../lib/rank.ts");
 
 const roles = process.argv.slice(2).length ? process.argv.slice(2) : ["PM", "SPM", "OPEN"];
@@ -19,9 +19,15 @@ const roles = process.argv.slice(2).length ? process.argv.slice(2) : ["PM", "SPM
 console.log(`storage: ${backend()}`);
 console.log(`roles  : ${roles.join(", ")}\n`);
 
-const parsed = await ingestApplications();
-await saveParsed(parsed);
-console.log(`ingested ${parsed.length} CVs\n`);
+const fromDisk = await ingestApplications();
+await saveParsed(fromDisk);
+// Include anything uploaded through the dashboard, not just files on disk.
+const parsed = await allCandidates(fromDisk);
+const uploaded = parsed.length - fromDisk.length;
+console.log(
+  `ingested ${fromDisk.length} CVs from disk` +
+    (uploaded > 0 ? `, plus ${uploaded} uploaded\n` : "\n"),
+);
 
 const timings = [];
 

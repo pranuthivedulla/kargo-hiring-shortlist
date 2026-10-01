@@ -134,6 +134,26 @@ for candidates online. Models: `ANTHROPIC_MODEL` (default `claude-opus-5`),
 `ANTHROPIC_DRAFT_MODEL` (default `claude-sonnet-5`), `GEMINI_MODEL`
 (default `gemini-3.8-flash`).
 
+## Adding CVs
+
+Two ways in, both landing in the same place:
+
+- **Upload from the dashboard** — the *Add CVs* panel takes PDF, DOCX, TXT or
+  MD. The file is parsed in the request and only its extracted text is stored;
+  the original is never read again, so no blob storage is needed on a platform
+  with a read-only filesystem. The role comes from the tab you are on, falling
+  back to the filename and then to the OPEN pile.
+- **Drop files into `data/applications/<ROLE>/`** and run a batch, which
+  re-ingests from disk first.
+
+`lib/store.ts`'s `allCandidates()` merges both by id, and **ranking reads that
+merge, not the disk listing**. Without it an uploaded CV would be stored and
+then silently skipped by the next batch, which is the bug this was built to
+avoid.
+
+Uploading never ranks. Ranking is a separate, explicit action — and a full
+batch exceeds this platform's function limit in any case (see below).
+
 ## Storage
 
 `lib/store.ts` is the only thing that writes at runtime. Two backends, same
@@ -178,6 +198,25 @@ Four paths, each degrading to the next:
 
 Interview length comes from `INTERVIEW_MINUTES` (default 45) and is shared by
 the email text and the slot finder, so the two cannot disagree.
+
+## Why batches run from the CLI
+
+Measured on the real corpus with `gemini-3.8-flash`:
+
+| Batch | CVs | Time |
+|---|---|---|
+| PM | 15 | 127.1s |
+| SPM | 15 | 137.1s |
+| OPEN | 30 | 147.6s |
+
+Vercel's Hobby tier caps a function at **60 seconds**, so *Run batch* times out
+on the deployment. Batches run from a laptop with `npx tsx scripts/run-live.mjs`
+and write to the same database the deployed app reads.
+
+The obvious workaround — splitting a role into smaller batches — is **not**
+done, deliberately. STEP 4 ranks candidates against each other, so the model
+has to see the whole batch. Chunking would quietly produce a different, worse
+ranking while appearing to work.
 
 ## Tests
 
