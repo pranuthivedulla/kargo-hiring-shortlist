@@ -173,6 +173,16 @@ They never change while the app runs, so they ship inside the repo. That needs
 read through `fs` at request time, and without it production fails with
 "No job description found" while local works fine.
 
+### Sending from a deployment
+
+A deployed instance that can send is one anyone with the password can send
+from, to addresses read out of CVs — and those are real inboxes. So in
+production `sendEmail` refuses unless one of these is set:
+
+- `SEND_OVERRIDE_TO` — every message goes to that one address and no CV address
+  is used. This is how the deployment is configured.
+- `ALLOW_REAL_SENDS=1` — deliberate opt-in to emailing real candidates.
+
 > **Before committing real CVs:** these are candidates' names, emails and work
 > histories. Do not push them to a public repository. Either keep the repo
 > private or move `data/applications/` to object storage.

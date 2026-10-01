@@ -404,6 +404,10 @@ type UploadResult = {
  * platform with a read-only filesystem.
  */
 function UploadPanel({ role, onUploaded }: { role: Role; onUploaded: () => void }) {
+  // Defaults to the tab you are on, but shown and changeable: which role a CV
+  // is filed under decides which job description it is gated against, so it
+  // should never be implicit.
+  const [fileAs, setFileAs] = useState<Role>(role);
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<UploadResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -416,7 +420,7 @@ function UploadPanel({ role, onUploaded }: { role: Role; onUploaded: () => void 
     try {
       const body = new FormData();
       // The open tab means "work the role out"; the others file it explicitly.
-      body.append("role", role === "OPEN" ? "AUTO" : role);
+      body.append("role", fileAs === "OPEN" ? "AUTO" : fileAs);
       for (const f of Array.from(files)) body.append("files", f);
 
       const res = await fetch("/api/upload", { method: "POST", body });
@@ -434,10 +438,26 @@ function UploadPanel({ role, onUploaded }: { role: Role; onUploaded: () => void 
   return (
     <div className={styles.panel}>
       <div className={styles.panelTitle}>Add CVs</div>
+      <label className={styles.field} style={{ marginBottom: 10 }}>
+        <span className={styles.fieldLabel}>File these as</span>
+        <select
+          className={styles.input}
+          value={fileAs}
+          onChange={(e) => setFileAs(e.target.value as Role)}
+          disabled={busy}
+        >
+          {ROLES.map((r) => (
+            <option key={r} value={r}>
+              {r === "OPEN" ? "Work it out from the filename" : ROLE_LABEL[r]}
+            </option>
+          ))}
+        </select>
+      </label>
+
       <p className={styles.uploadLead}>
-        {role === "OPEN"
-          ? "Filed by role if the filename says so, otherwise as role-not-stated."
-          : `Filed as ${ROLE_LABEL[role]}.`}{" "}
+        {fileAs === "OPEN"
+          ? "Read from the filename if it says pm or spm, otherwise filed as role-not-stated and gated against both job descriptions."
+          : `Gated against the ${ROLE_LABEL[fileAs]} job description.`}{" "}
         PDF, DOCX, TXT or MD.
       </p>
 

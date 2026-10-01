@@ -217,6 +217,22 @@ export async function createBookingLink(
 export async function sendEmail(to: string, subject: string, body: string) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) throw new Error("RESEND_API_KEY is not set.");
+
+  // A deployed instance that can send is one anyone with the password can send
+  // from, to addresses lifted out of CVs - and those are real inboxes, including
+  // other students' squad addresses in this corpus. So a deployment may only
+  // send to the single SEND_OVERRIDE_TO address unless real sending is turned
+  // on deliberately.
+  if (
+    process.env.NODE_ENV === "production" &&
+    !sendOverride() &&
+    process.env.ALLOW_REAL_SENDS !== "1"
+  ) {
+    throw new Error(
+      "This deployment will not send to real candidates. Set SEND_OVERRIDE_TO to route " +
+        "every message to one test address, or ALLOW_REAL_SENDS=1 to allow real sending.",
+    );
+  }
   const from = process.env.RESEND_FROM;
   if (!from) {
     throw new Error("RESEND_FROM is not set (e.g. \"Arjun Mehta <arjun@yourdomain.com>\").");
